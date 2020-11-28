@@ -10,7 +10,7 @@ Experimentations of MATLAB Reservoir Simulation Toolbox in Google Colab to port 
 
 Phase 1. Full codes and documentations are preserved in [Zenodo]()
 * Use Google Colab to run a MATLAB (Octave) script of MRST simulation of five-spot waterflooding in SPE10 model.
-* Couple the simulation with Python optimizer such as Bayesian optimization for well placement optimization.
+* Optimizing the well placement by coupling the simulation with a Python optimizer, such as Bayesian optimization.
 
 ### On experimentation:
 * Modifying the MRST script to use `gpuArray` so that the simulation can use the free GPU in Colab and speed up simulation.
