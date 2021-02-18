@@ -280,6 +280,7 @@ addpath /content/mrst-autodiff/example-suite/examples
 addpath /content/mrst-autodiff/example-suite/examples-mrst
 addpath /content/mrst-autodiff/example-suite/examples-mrst/utils
 addpath /content/pyMRST/modules
+addpath /content/pyMRST/modules/additionals
 addpath /content/pyMRST/modules/utils
 addpath /content/pyMRST/modules/utils/units
 addpath /content/pyMRST/modules/incomp
