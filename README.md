@@ -2,6 +2,59 @@
 
 Python wrappers to run simple reservoir simulations in MATLAB Reservoir Simulation Toolbox (MRST)
 
+## Single-phase Fluid
+
+### Water
+Example inputs: 
+
+* mu = 1 cp
+* rho = 1000 kg/m3
+
+Formula: 
+
+* mu, rho = constant
+
+```
+FLUID1
+water
+1,1000
+```
+### Oil
+Example inputs:
+
+* mu = 1 cp
+* rho_r = 850 kg/m3 (Reference rho @ reference pressure)
+* pr = 200 bar (Reference pressure)
+* c = 1e-3 1/bar (Fluid compressibility)
+
+Formula:
+* mu = constant
+* rho(p) = rho_r * exp(c * (p - p_r))
+
+```
+FLUID1
+oil
+1,850,200,0.001
+```
+
+Example inputs for gas:
+
+* mu0 = 5 cp (Viscosity at zero)
+* rho_r = 850 kg/m3
+* pr = 200 bar
+* c = 1e-3 1/bar
+* c_mu = 2e-3 1/bar (Viscosity coefficient)
+
+Formula:
+* mu(p) = mu0*  (1 + c_mu * (p - p_r))
+* rho(p) = rho_r * exp(c * (p - p_r))
+
+```
+FLUID1
+gas
+5,850,200,0.001,0.002
+```
+
 <!--
 Experimentations of MATLAB Reservoir Simulation Toolbox in Google Colab to port it with Python and utilize free GPUs for faster computation
 
