@@ -17,7 +17,7 @@ def setup():
   clone('https://bitbucket.org/mrst/mrst-core.git')
   clone('https://bitbucket.org/mrst/mrst-autodiff.git')
   clone('https://github.com/yohanesnuwara/reservoir_datasets')
-  clone('https://github.com/yohanesnuwara/pyMRST')
+#   clone('https://github.com/yohanesnuwara/pyMRST')
 
 def write_input(nx, ny, nz, lx, ly, lz, poro, k, rock, fluid, well, 
                 bc_front, bc_back, bc_left, bc_right):
