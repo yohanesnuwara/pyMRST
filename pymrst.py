@@ -1,14 +1,19 @@
 def setup():
+  """
+  Setup PyMRST
+  """
   import subprocess
 
-  def install(name):
+  def apt_install(name):
     subprocess.call(['apt', 'install', name])
-  
+  def pip_install(name):
+    subprocess.call(['pip', 'install', name])
   def clone(url):
     subprocess.call(['git', 'clone', url])
   
   # Install octave and cloning repositories
-  install('octave')
+  apt_install('octave')
+  pip_install('oct2py')
   clone('https://bitbucket.org/mrst/mrst-core.git')
   clone('https://bitbucket.org/mrst/mrst-autodiff.git')
   clone('https://github.com/yohanesnuwara/reservoir_datasets')
