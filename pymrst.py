@@ -108,3 +108,21 @@ def plotCellData(cube, plane, position, cmap="plasma", vmin=None, vmax=None):
                vmin=vmin, vmax=vmax) # No transpose
     plt.xlabel("X [grid]"); plt.ylabel("Y [grid]")
     plt.colorbar()  
+
+def water_1phase(nx, ny, nz, lx, ly, lz, poro, k, fluid, well, 
+                         bc_front, bc_back, bc_left, bc_right):
+  """
+  MRST Incompressible Water Simulation
+  """
+  import oct2py as op
+  # Execute writing MATLAB input program from given inputs
+  # After executed, new .m file is created: INPUT.m
+  write_input(nx, ny, nz, lx, ly, lz, poro, k, rock, fluid, well, 
+              bc_front, bc_back, bc_left, bc_right)
+  
+  # Execute simulation program "water_1phase.m"
+  # After executed, new .mat files (that contains PRESSURE, PORO, PERM result)
+  # is created inside new directory "result_water_1phase"
+  # !octave -W /content/pyMRST/water_1phase.m
+  octave = op.Oct2Py()
+  octave.run("/content/pyMRST/water_1phase.m")    
