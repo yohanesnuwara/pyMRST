@@ -14,6 +14,3 @@ def setup():
   clone('https://github.com/yohanesnuwara/reservoir_datasets')
   clone('https://github.com/yohanesnuwara/pyMRST')
   
-  # Add system path
-  import sys
-  sys.path.append("/content/pymrst")  
