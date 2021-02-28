@@ -33,7 +33,7 @@ def reshape_3d(array_1d, dimension):
   lenX, lenY, lenZ = dimension
   return np.reshape(array_1d, (lenZ, lenY, lenX)).T
 
-def getCellData(directory, filename):
+def getCellData(directory, filename, dimension):
   """
   Get MRST cells output from MAT file in a DIRECTORY, convert to 3D array
 
