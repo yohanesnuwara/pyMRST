@@ -1,6 +1,12 @@
 # pyMRST
 
-Python wrappers to run simple reservoir simulations in MATLAB Reservoir Simulation Toolbox (MRST)
+Python wrappers to run simple reservoir simulations from MATLAB Reservoir Simulation Toolbox (MRST)
+
+<div>
+<img src="https://user-images.githubusercontent.com/51282928/109408566-7d209800-79bd-11eb-89b3-294343680217.png" width="500"/>
+</div>
+
+<!--
 
 ## Single-phase Fluid
 
