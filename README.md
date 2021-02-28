@@ -6,6 +6,18 @@ Python wrappers to run simple reservoir simulations from MATLAB Reservoir Simula
 <img src="https://user-images.githubusercontent.com/51282928/109408566-7d209800-79bd-11eb-89b3-294343680217.png" width="500"/>
 </div>
 
+MATLAB Reservoir Simulation Toolbox (MRST) is a free open-source software for reservoir modelling and simulation, developed primarily by the Computational Geosciences group in the Department of Mathematics and Cybernetics at SINTEF Digital.
+
+While pyMRST is a wrapper that allows users to run simulations from MRST in a Python environment. Currently, it has single-phase reservoir simulations for water, oil, gas, polymer, and thermal effect. 
+
+|Simulations|Python notebook|
+|:--:|:--:|
+|1-phase water|[Notebook]()|
+|1-phase oil|[Notebook]()|
+|1-phase gas|[Notebook]()|
+|1-phase polymer|[Notebook]()|
+|1-phase compressible with thermal effect|[Notebook]()|
+
 <!--
 
 ## Single-phase Fluid
