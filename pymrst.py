@@ -204,6 +204,20 @@ def getCellData(directory, filename, dimension):
 
   return cube
 
+def getWellSol(directory, filename):
+  """
+  Plot well solutions output from MAT file, in a 2D plane map
+
+  NOTE: 
+  
+  Well solutions in MRST is data such as flowing pressure, production rate, etc.  
+  """
+  import numpy as np  
+
+  # Get pressure 1D array
+  array = np.loadtxt(directory+"/"+filename, skiprows=5)
+
+  return array
 
 def plotCellData(cube, plane, position, cmap="plasma", vmin=None, vmax=None):
   """
