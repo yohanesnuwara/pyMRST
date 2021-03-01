@@ -126,7 +126,7 @@ mkdir(directory)
 # Save pressure results into .mat files
 for i=1:length(steps)
   step = steps(i);
-  pressure = sol(step).pressure/barsa;
+  pressure = sol(step).pressure;
   # give number (step) to filename
   # filename = sprintf('/content/result_compressible_oil/pressure%d.mat', step); 
   filename = sprintf([directory,"/pressure%d.mat"], step); 
@@ -134,9 +134,9 @@ for i=1:length(steps)
 endfor
 
 # Save well solutions into .mat files
-time = [sol(2:end).time]/day; # day
-qo = -[sol(2:end).qS]*day; # m3/day
-Pwf = mean([sol(2:end).pressure]/barsa); # bar
+time = [sol(2:end).time]; 
+qo = -[sol(2:end).qS]; 
+Pwf = mean([sol(2:end).pressure]); 
 
 save([directory,"/time.mat"], "time");
 save([directory,"/qo.mat"], "qo");
