@@ -13,11 +13,13 @@ While pyMRST is a wrapper that allows users to run simulations from MRST in a Py
 |Simulations|Python notebook|
 |:--:|:--:|
 |1-phase water|[Notebook]()|
-|1-phase oil|[Notebook]()|
-|1-phase gas|[Notebook]()|
-|1-phase polymer|[Notebook]()|
+|1-phase oil *)|[Notebook]()|
+|1-phase gas *)|[Notebook]()|
+|1-phase polymer *)|[Notebook]()|
 |1-phase compressible with thermal effect|[Notebook]()|
 |2-phase oil-water|[Notebook]()|
+
+*) No flow boundary condition and constant BHP well assumption
 
 <!--
 
