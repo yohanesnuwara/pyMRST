@@ -243,7 +243,7 @@ def plotCellData(cube, plane, position, cmap="plasma", vmin=None, vmax=None):
     plt.colorbar()
   if plane=="xy":
     slice2d = cube[:,:,position] # Constant Z for XY plane
-    plt.imshow(slice2d.T, extent=(0,lenX,0,lenY), aspect="auto", cmap=cmap,
+    plt.imshow(slice2d.T, extent=(0,lenX,lenY,0), aspect="auto", cmap=cmap,
                vmin=vmin, vmax=vmax) # No transpose
     plt.xlabel("X [grid]"); plt.ylabel("Y [grid]")
     plt.colorbar()  
