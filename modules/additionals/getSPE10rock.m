@@ -113,7 +113,8 @@ end
 function rock = load_mat_file()
    %rdir = getDatasetPath('spe10', 'skipAvailableCheck', true);
 %    rdir = '/content/mrst-core/data/SPE10';
-   rdir = '/content/pyMRST/data/SPE10';
+%    rdir = '/content/pyMRST/data/SPE10';
+   rdir = '/content/reservoir_datasets/MRST/SPE10';
    rock_file = fullfile(rdir, 'spe10_rock');
 
    if ~exist([rock_file, '.mat'], 'file')
