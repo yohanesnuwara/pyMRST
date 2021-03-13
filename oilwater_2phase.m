@@ -83,12 +83,20 @@ wellSols = wellSol(:,1);
 for i = 1:numel(W)-1
   Sw = cellfun(@(x) abs(x(i).Sw), wellSols);
   Wc = cellfun(@(x) abs(x(i).wcut), wellSols); # water cut  
+  qOs = cellfun(@(x) abs(x(i).qOs), wellSols); # oil rate
+  qWs = cellfun(@(x) abs(x(i).qWs), wellSols); # water rate
 
   filename = sprintf([directory,"/well%d_Sw.mat"], i);
   save(filename, "Sw");
 
   filename = sprintf([directory,"/well%d_Wc.mat"], i);
-  save(filename, "Wc");  
+  save(filename, "Wc"); 
+
+  filename = sprintf([directory,"/well%d_qOs.mat"], i);
+  save(filename, "qOs"); 
+
+  filename = sprintf([directory,"/well%d_qWs.mat"], i);
+  save(filename, "qWs");      
 end
 
 endfor
