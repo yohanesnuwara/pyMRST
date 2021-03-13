@@ -292,3 +292,4 @@ addpath /content/pyMRST/modules/incomp/fluid/incompressible
 addpath /content/pyMRST/modules/incomp/examples
 addpath /content/pyMRST/modules/incomp/examples/1ph
 addpath /content/pyMRST/modules/incomp/examples/2ph
+addpath /content/pyMRST/modules/diagnostics
