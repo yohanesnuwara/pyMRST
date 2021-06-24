@@ -279,3 +279,14 @@ def water_1phase(nx, ny, nz, lx, ly, lz, poro, k, fluid, well,
   # !octave -W /content/pyMRST/water_1phase.m
   octave = op.Oct2Py()
   octave.run("/content/pyMRST/water_1phase.m")    
+
+def oilwater_2phase():
+  """
+  MRST Two-phase Oil-water Simulation
+  """
+  import oct2py as op
+  # Execute simulation program "oilwater_2phase.m"
+  # After executed, new .mat files is created inside new directory 
+  # "result_oilwater_2phase"
+  octave = op.Oct2Py()
+  octave.run("/content/pyMRST/oilwater_2phase.m")
