@@ -157,6 +157,183 @@ def write_input(nx, ny, nz, lx, ly, lz, poro, k, rock, fluid, well,
   input_file = open("/content/pyMRST/INPUT.m", "w")
   input_file.write(input)
   input_file.close()  
+
+def model_input(model, fluid, well, 
+                bc_front, bc_back, bc_left, bc_right, 
+                numSteps=None, totTime=None, steps=None):
+  """
+  Convert inputs given in Python to write a MATLAB program that executes
+  reservoir geometry, rock property, fluid, boundary condition creation 
+  """
+  input = "addpath /content/pyMRST \n"
+  input += "addpaths\n\n"
+
+  # Check if a model is used. If not, use the specified inputs.
+  model_name = model["name"]
+  if model_name=="spe10":
+    # SPE10 is used
+    input += "# SPE10 model \n"
+    input += "[startlayer,nlayer] = deal({}, {}); \n".format(model["startlayer"], model["nlayer"])
+    input += "dims = [60 220 nlayer]; \n" 
+    input += "domain = dims.*[20 10 2]*ft; \n"
+    input += "G = computeGeometry(cartGrid(dims,domain)); \n\n"
+
+    input += "# Make rock \n"
+    input += "rock = getSPE10rock((1:dims(1)), (1:dims(2)), startlayer:startlayer+(nlayer-1)); \n"            
+    input += "rock.poro = max(rock.poro,.0005); \n\n"
+
+  # # Rock PV calculation
+  # input += "# Rock PV \n"
+
+
+  # if fluid["type"]=="oil" or fluid["type"]=="gas": # Compressible simulations
+  #   input += "cr = {}; \n".format(rock["c"])
+  #   input += "p_r = {}; \n".format(rock["p_r"])
+  #   input += "pv_r = poreVolume(G, rock); \n"
+  #   input += "pv = @(p) pv_r .* exp( cr * (p - p_r) ); \n\n" 
+
+  # Boundary conditions
+  input += "# Boundary conditions \n"
+  input += "bc = [];\n"
+
+  bc_loc = ["'FRONT'", "'BACK'", "'LEFT'", "'RIGHT'"]
+  bc_type = [bc_front["type"], bc_back["type"], bc_left["type"], bc_right["type"]]
+  bc_val = [bc_front["value"], bc_back["value"], bc_left["value"], bc_right["value"]]
+
+  for i in range(len(bc_type)):
+    if i==0:
+      # First boundary condition, bc=[]
+      if bc_type[i]=="fluxside":
+        input += "bc = fluxside([], G, {}, {});\n".format(bc_loc[i], bc_val[i])
+      if bc_type[i]=="pside":
+        input += "bc = pside([], G, {}, {});\n".format(bc_loc[i], bc_val[i])
+    if i>0:
+      if bc_type[i]=="fluxside":
+        input += "bc = fluxside(bc, G, {}, {});\n".format(bc_loc[i], bc_val[i])
+      if bc_type[i]=="pside":
+        input += "bc = pside(bc, G, {}, {});\n".format(bc_loc[i], bc_val[i])      
+  input += "\n"
+
+  # Fluid
+  # If a string, so single-phase (numphase=1)
+  if type(fluid["type"])==str:
+    input += "# Fluid is {}\n".format(fluid["type"])
+    # Single phase
+    if fluid["type"]=="water":
+      input += "fluid     = initSingleFluid('mu', {}, 'rho', {});\n\n".format(fluid["mu"], fluid["rho"])
+    if fluid["type"]=="oil":
+      input += "mu = {}; \n".format(fluid["mu"])
+      input += "c = {}; \n".format(fluid["c"])
+      input += "rho_r = {}; \n".format(fluid["rho_r"])
+      input += "rhoS = {}; \n".format(fluid["rhoS"])
+      input += "rho = @(p) rho_r .* exp( c * (p - p_r) );\n\n"
+      ## Timestep
+      input += "# Timestep\n"
+      input += "[numSteps, totTime] = deal({}, {}*day); \n".format(numSteps, totTime)
+      input += "steps = {}; \n\n".format(steps)      
+
+    if fluid["type"]=="gas":
+      input += "mu0 = {}; \n".format(fluid["mu0"])
+      input += "c = {}; \n".format(fluid["c"])      
+      input += "rho_r = {}; \n".format(fluid["rho_r"])
+      input += "rhoS = {}; \n".format(fluid["rhoS"])      
+      input += "c_mu = {}; \n".format(fluid["c_mu"])            
+      input += "mu = @(p) mu0*(1+c_mu*(p-p_r)); \n"
+      input += "rho = @(p) rho_r .* exp( c * (p - p_r) );\n\n"
+      ## Timestep
+      input += "# Timestep\n"
+      input += "[numSteps, totTime] = deal({}, {}*day); \n".format(numSteps, totTime)
+      input += "steps = {}; \n\n".format(steps)  
+
+  else:
+    if len(fluid["type"])==2:
+      # Two-phase
+      input += "# Two-phase oil-water\n"
+      input += "fluid = initSimpleFluid('mu', [{}, {}], 'rho', [{}, {}], 'n', [{}, {}]); \n\n".\
+      format(fluid["mu"][0], fluid["mu"][1], fluid["rho"][0], fluid["rho"][1],
+             fluid["n"][0], fluid["n"][1])
+      
+      input += "# Timestep \n"
+      input += "[numSteps, totTime] = deal({}, {}*day); \n".format(numSteps, totTime)
+      input += "steps = {}; \n\n".format(steps) 
+
+  # Well
+  input += "# Well\n"
+  if type(fluid["type"])==str:
+    # Single-phase. Well doesn't have phase
+    for i in range(len(well["type"])):
+      well_loc = well["cell_loc"][i]
+      well_type = well["type"][i]
+      well_value = well["value"][i]
+      well_radius = well["radius"][i]
+      well_skin = well["skin"][i]
+      well_direction = well["direction"][i]
+
+      # Well locations convert to list to avoid breaking into new line
+      input += "well_loc = {};".format(list(well_loc))  
+      input += "\n"
+
+      if well_type=="bhp":
+        input += "pwf = {}; \n".format(well_value)      
+
+      if i==0:
+        # First well
+        well_number = "[]"
+      if i>0:
+        # The next wells
+        well_number = "W"
+
+      if well_direction=="y":
+        # Well is horizontal to y
+        input += "W = addWell({}, G, rock, well_loc, 'Type', '{}', 'Val', {}, 'Radius', {}, 'Dir', 'y');\n\n".format(well_number, well_type, well_value, well_radius)
+      elif well_direction=="x":
+        # Well is horizontal to x
+        input += "W = addWell({}, G, rock, well_loc, 'Type', '{}', 'Val', {}, 'Radius', {}, 'Dir', 'x');\n\n".format(well_number, well_type, well_value, well_radius)      
+      else:
+        # Well is vertical
+        input += "W = addWell({}, G, rock, well_loc, 'Type', '{}', 'Val', {}, 'Radius', {});\n\n".format(well_number, well_type, well_value, well_radius)
+
+  else:
+    if len(fluid["type"])==2:
+      # Two-phase. Well have 2 phase
+      for i in range(len(well["type"])):    
+        well_type = well["type"][i]
+        well_value = well["value"][i]
+        well_phase = well["phase"][i]
+        well_radius = well["radius"][i]
+        well_skin = well["skin"][i]
+        well_direction = well["direction"][i]
+
+        if well_direction==None:
+          # For this 2-phase only vertical well is still implemented.
+          well_locx = well["cellx_loc"][i]
+          well_locy = well["celly_loc"][i]    
+          well_locz = well["cellz_loc"][i]          
+          # # Well locations convert to list to avoid breaking into new line
+          # input += "well_loc = {};".format(list(well_loc))  
+          # input += "\n"
+
+          if i==0:
+            # First well
+            well_number = "[]"
+          if i>0:
+            # The next wells
+            well_number = "W"
+
+          input += "W = verticalWell({}, G, rock, {}, {}, {}, 'Type', '{}', 'Val', {}, 'Radius', {}, 'InnerProduct', 'ip_tpf', 'Comp_i', {});\n".\
+          format(well_number, well_locx, well_locy, well_locz, well_type, well_value, well_radius, well_phase)
+
+        else:
+          print("Horizontal well for 2-phase is NOT YET implemented")
+
+
+  # print(input)
+
+  # write file instead of %%writefile
+  # input_file = open("/content/INPUT.m", "w")
+  input_file = open("/content/pyMRST/INPUT.m", "w")
+  input_file.write(input)
+  input_file.close()    
   
 def reshape_3d(array_1d, dimension):
   """
