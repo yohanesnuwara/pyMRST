@@ -20,7 +20,8 @@ def setup():
 #   clone('https://github.com/yohanesnuwara/pyMRST')
 
 def write_input(nx, ny, nz, lx, ly, lz, poro, k, rock, fluid, well, 
-                bc_front, bc_back, bc_left, bc_right):
+                bc_front, bc_back, bc_left, bc_right, 
+                numSteps=None, totTime=None, steps=None):
   """
   Convert inputs given in Python to write a MATLAB program that executes
   reservoir geometry, rock property, fluid, boundary condition creation 
@@ -28,10 +29,10 @@ def write_input(nx, ny, nz, lx, ly, lz, poro, k, rock, fluid, well,
   input = "addpath /content/pyMRST \n"
   input += "addpaths\n\n"
 
-  # Timestep
-  input += "# Timestep\n"
-  input += "[numSteps, totTime] = deal({}, {}*day); \n".format(numSteps, totTime)
-  input += "steps = {}; \n\n".format(steps)
+  # # Timestep
+  # input += "# Timestep\n"
+  # input += "[numSteps, totTime] = deal({}, {}*day); \n".format(numSteps, totTime)
+  # input += "steps = {}; \n\n".format(steps)
 
   # Reservoir geometry
   input += "# Reservoir geometry\n"
@@ -45,12 +46,16 @@ def write_input(nx, ny, nz, lx, ly, lz, poro, k, rock, fluid, well,
   if poro["type"]=="heterogeneous":
     if poro["field"]=="gaussian":
       input += "p = gaussianField(G.cartDims, [{} {}], [5 3 1], {});\n\n".format(poro["min"], poro["max"], poro["std"])
+  if poro["type"]=="homogeneous":
+    input += "p = {};\n\n".format(poro["value"])
 
   # Permeability 
   input += "# Permeability \n"
   if k["type"]=="heterogeneous":
     if k["field"]=="kozeny":
       input += "K = p.^3.*(1e-5)^2./(0.81*72*(1-p).^2); \n\n"
+  if k["type"]=="homogeneous":
+    input += "K = {};\n\n".format(k["value"])
 
   # Make rock
   input += "# Make rock\n"
@@ -58,7 +63,7 @@ def write_input(nx, ny, nz, lx, ly, lz, poro, k, rock, fluid, well,
 
   # Rock PV calculation
   input += "# Rock PV \n"
-  if fluid["type"]=="oil": # Slightly compressible simulation
+  if fluid["type"]=="oil" or fluid["type"]=="gas": # Compressible simulations
     input += "cr = {}; \n".format(rock["c"])
     input += "p_r = {}; \n".format(rock["p_r"])
     input += "pv_r = poreVolume(G, rock); \n"
@@ -99,10 +104,23 @@ def write_input(nx, ny, nz, lx, ly, lz, poro, k, rock, fluid, well,
       input += "rho_r = {}; \n".format(fluid["rho_r"])
       input += "rhoS = {}; \n".format(fluid["rhoS"])
       input += "rho = @(p) rho_r .* exp( c * (p - p_r) );\n\n"
+      ## Timestep
+      input += "# Timestep\n"
+      input += "[numSteps, totTime] = deal({}, {}*day); \n".format(numSteps, totTime)
+      input += "steps = {}; \n\n".format(steps)      
 
     if fluid["type"]=="gas":
-      input += "mu = @(p) {}*(1+{}*(p-{})); \n".format(fluid["mu0"], fluid["c_mu"], fluid["p_r"])
-      input += "@(p) {} .* exp( {} * (p - {}) );\n\n".format(fluid["rho_r"], fluid["c"], fluid["p_r"])
+      input += "mu0 = {}; \n".format(fluid["mu0"])
+      input += "c = {}; \n".format(fluid["c"])      
+      input += "rho_r = {}; \n".format(fluid["rho_r"])
+      input += "rhoS = {}; \n".format(fluid["rhoS"])      
+      input += "c_mu = {}; \n".format(fluid["c_mu"])            
+      input += "mu = @(p) mu0*(1+c_mu*(p-p_r)); \n"
+      input += "rho = @(p) rho_r .* exp( c * (p - p_r) );\n\n"
+      ## Timestep
+      input += "# Timestep\n"
+      input += "[numSteps, totTime] = deal({}, {}*day); \n".format(numSteps, totTime)
+      input += "steps = {}; \n\n".format(steps)  
 
   else:
     if len(fluid["type"])==2:
@@ -137,13 +155,13 @@ def write_input(nx, ny, nz, lx, ly, lz, poro, k, rock, fluid, well,
 
       if well_direction=="y":
         # Well is horizontal to y
-        input += "W = addWell({}, G, rock, well_loc, 'Type', '{}', 'InnerProduct', 'ip_tpf', 'Val', {}, 'Radius', {}, 'Dir', 'y');\n\n".format(well_number, well_type, well_value, well_radius)
+        input += "W = addWell({}, G, rock, well_loc, 'Type', '{}', 'Val', {}, 'Radius', {}, 'Dir', 'y');\n\n".format(well_number, well_type, well_value, well_radius)
       elif well_direction=="x":
         # Well is horizontal to x
-        input += "W = addWell({}, G, rock, well_loc, 'Type', '{}', 'InnerProduct', 'ip_tpf', 'Val', {}, 'Radius', {}, 'Dir', 'x');\n\n".format(well_number, well_type, well_value, well_radius)      
+        input += "W = addWell({}, G, rock, well_loc, 'Type', '{}', 'Val', {}, 'Radius', {}, 'Dir', 'x');\n\n".format(well_number, well_type, well_value, well_radius)      
       else:
         # Well is vertical
-        input += "W = addWell({}, G, rock, well_loc, 'Type', '{}', 'InnerProduct', 'ip_tpf', 'Val', {}, 'Radius', {});\n\n".format(well_number, well_type, well_value, well_radius)
+        input += "W = addWell({}, G, rock, well_loc, 'Type', '{}', 'Val', {}, 'Radius', {});\n\n".format(well_number, well_type, well_value, well_radius)
 
   else:
     if len(fluid["type"])==2:
@@ -157,6 +175,145 @@ def write_input(nx, ny, nz, lx, ly, lz, poro, k, rock, fluid, well,
   input_file = open("/content/pyMRST/INPUT.m", "w")
   input_file.write(input)
   input_file.close()  
+
+# def write_input(nx, ny, nz, lx, ly, lz, poro, k, rock, fluid, well, 
+#                 bc_front, bc_back, bc_left, bc_right):
+#   """
+#   Convert inputs given in Python to write a MATLAB program that executes
+#   reservoir geometry, rock property, fluid, boundary condition creation 
+#   """
+#   input = "addpath /content/pyMRST \n"
+#   input += "addpaths\n\n"
+
+#   # Timestep
+#   input += "# Timestep\n"
+#   input += "[numSteps, totTime] = deal({}, {}*day); \n".format(numSteps, totTime)
+#   input += "steps = {}; \n\n".format(steps)
+
+#   # Reservoir geometry
+#   input += "# Reservoir geometry\n"
+#   input += "[nx,ny,nz] = deal({}, {}, {});\n".format(nx, ny, nz)
+#   input += "[lx,ly,lz] = deal({}, {}, {});\n".format(lx, ly, lz)
+#   input += "G = cartGrid([nx ny nz],[lx ly lz]);\n"
+#   input += "G = computeGeometry(G);\n\n"
+
+#   # Porosity 
+#   input += "# Porosity \n"
+#   if poro["type"]=="heterogeneous":
+#     if poro["field"]=="gaussian":
+#       input += "p = gaussianField(G.cartDims, [{} {}], [5 3 1], {});\n\n".format(poro["min"], poro["max"], poro["std"])
+
+#   # Permeability 
+#   input += "# Permeability \n"
+#   if k["type"]=="heterogeneous":
+#     if k["field"]=="kozeny":
+#       input += "K = p.^3.*(1e-5)^2./(0.81*72*(1-p).^2); \n\n"
+
+#   # Make rock
+#   input += "# Make rock\n"
+#   input +=  "rock = makeRock(G, K(:), p(:)); \n\n"
+
+#   # Rock PV calculation
+#   input += "# Rock PV \n"
+#   if fluid["type"]=="oil": # Slightly compressible simulation
+#     input += "cr = {}; \n".format(rock["c"])
+#     input += "p_r = {}; \n".format(rock["p_r"])
+#     input += "pv_r = poreVolume(G, rock); \n"
+#     input += "pv = @(p) pv_r .* exp( cr * (p - p_r) ); \n\n" 
+
+#   # Boundary conditions
+#   input += "# Boundary conditions \n"
+#   input += "bc = [];\n"
+
+#   bc_loc = ["'FRONT'", "'BACK'", "'LEFT'", "'RIGHT'"]
+#   bc_type = [bc_front["type"], bc_back["type"], bc_left["type"], bc_right["type"]]
+#   bc_val = [bc_front["value"], bc_back["value"], bc_left["value"], bc_right["value"]]
+
+#   for i in range(len(bc_type)):
+#     if i==0:
+#       # First boundary condition, bc=[]
+#       if bc_type[i]=="fluxside":
+#         input += "bc = fluxside([], G, {}, {});\n".format(bc_loc[i], bc_val[i])
+#       if bc_type[i]=="pside":
+#         input += "bc = pside([], G, {}, {});\n".format(bc_loc[i], bc_val[i])
+#     if i>0:
+#       if bc_type[i]=="fluxside":
+#         input += "bc = fluxside(bc, G, {}, {});\n".format(bc_loc[i], bc_val[i])
+#       if bc_type[i]=="pside":
+#         input += "bc = pside(bc, G, {}, {});\n".format(bc_loc[i], bc_val[i])      
+#   input += "\n"
+
+#   # Fluid
+#   # If a string, so single-phase (numphase=1)
+#   if type(fluid["type"])==str:
+#     input += "# Fluid is {}\n".format(fluid["type"])
+#     # Single phase
+#     if fluid["type"]=="water":
+#       input += "fluid     = initSingleFluid('mu', {}, 'rho', {});\n\n".format(fluid["mu"], fluid["rho"])
+#     if fluid["type"]=="oil":
+#       input += "mu = {}; \n".format(fluid["mu"])
+#       input += "c = {}; \n".format(fluid["c"])
+#       input += "rho_r = {}; \n".format(fluid["rho_r"])
+#       input += "rhoS = {}; \n".format(fluid["rhoS"])
+#       input += "rho = @(p) rho_r .* exp( c * (p - p_r) );\n\n"
+
+#     if fluid["type"]=="gas":
+#       input += "mu = @(p) {}*(1+{}*(p-{})); \n".format(fluid["mu0"], fluid["c_mu"], fluid["p_r"])
+#       input += "@(p) {} .* exp( {} * (p - {}) );\n\n".format(fluid["rho_r"], fluid["c"], fluid["p_r"])
+
+#   else:
+#     if len(fluid["type"])==2:
+#       # Two-phase
+#       print("no")
+
+#   # Well
+#   input += "# Well\n"
+#   if type(fluid["type"])==str:
+#     # Single-phase. Well doesn't have phase
+#     for i in range(len(well["type"])):
+#       well_loc = well["cell_loc"][i]
+#       well_type = well["type"][i]
+#       well_value = well["value"][i]
+#       well_radius = well["radius"][i]
+#       well_skin = well["skin"][i]
+#       well_direction = well["direction"][i]
+
+#       # Well locations convert to list to avoid breaking into new line
+#       input += "well_loc = {};".format(list(well_loc))  
+#       input += "\n"
+
+#       if well_type=="bhp":
+#         input += "pwf = {}; \n".format(well_value)      
+
+#       if i==0:
+#         # First well
+#         well_number = "[]"
+#       if i>0:
+#         # The next wells
+#         well_number = "W"
+
+#       if well_direction=="y":
+#         # Well is horizontal to y
+#         input += "W = addWell({}, G, rock, well_loc, 'Type', '{}', 'InnerProduct', 'ip_tpf', 'Val', {}, 'Radius', {}, 'Dir', 'y');\n\n".format(well_number, well_type, well_value, well_radius)
+#       elif well_direction=="x":
+#         # Well is horizontal to x
+#         input += "W = addWell({}, G, rock, well_loc, 'Type', '{}', 'InnerProduct', 'ip_tpf', 'Val', {}, 'Radius', {}, 'Dir', 'x');\n\n".format(well_number, well_type, well_value, well_radius)      
+#       else:
+#         # Well is vertical
+#         input += "W = addWell({}, G, rock, well_loc, 'Type', '{}', 'InnerProduct', 'ip_tpf', 'Val', {}, 'Radius', {});\n\n".format(well_number, well_type, well_value, well_radius)
+
+#   else:
+#     if len(fluid["type"])==2:
+#       # Two-phase. Well have phase
+#       a=2  
+
+#   # print(input)
+
+#   # write file instead of %%writefile
+#   # input_file = open("/content/INPUT.m", "w")
+#   input_file = open("/content/pyMRST/INPUT.m", "w")
+#   input_file.write(input)
+#   input_file.close()  
 
 def model_input(model, fluid, well, 
                 bc_front, bc_back, bc_left, bc_right, 
