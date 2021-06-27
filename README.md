@@ -12,12 +12,12 @@ While pyMRST is a wrapper that allows users to run simulations from MRST in a Py
 
 |Simulations|Python notebook|
 |:--:|:--:|
-|1-phase water|[Notebook]()|
-|1-phase oil *)|[Notebook]()|
-|1-phase gas *)|[Notebook]()|
-|1-phase polymer *)|[Notebook]()|
-|1-phase compressible with thermal effect|[Notebook]()|
-|2-phase oil-water|[Notebook]()|
+|1-phase water|[Notebook](https://github.com/yohanesnuwara/pyMRST/blob/main/notebooks/pyMRST_water_incomp.ipynb)|
+|1-phase oil *)|[Notebook](https://github.com/yohanesnuwara/pyMRST/blob/main/notebooks/pyMRST_oil_slightly_comp.ipynb)|
+|1-phase gas *)|[Notebook](https://github.com/yohanesnuwara/pyMRST/blob/main/notebooks/pyMRST_gas_comp.ipynb)|
+|1-phase polymer *)|Notebook|
+|1-phase compressible with thermal effect|Notebook|
+|2-phase oil-water|[Notebook](https://github.com/yohanesnuwara/pyMRST/blob/main/notebooks/pyMRST_oilwaterflooding.ipynb)|
 
 *) No flow boundary condition and constant BHP well assumption
 
