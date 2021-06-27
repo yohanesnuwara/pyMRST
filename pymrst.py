@@ -607,6 +607,17 @@ def water_1phase():
   octave = op.Oct2Py()
   octave.run("/content/pyMRST/water_1phase.m")    
 
+def oil_1phase():
+  """
+  MRST Slightly Compressible Oil Simulation (Constant Viscosity over Pressure)
+  """
+  import oct2py as op
+  # Execute simulation program "oil_1phase.m"
+  # After executed, new .mat files (that contains PRESSURE, PORO, PERM result)
+  # is created inside new directory "result_oil_1phase"
+  octave = op.Oct2Py()
+  octave.run("/content/pyMRST/oil_1phase.m")  
+  
 def oilwater_2phase():
   """
   MRST Two-phase Oil-water Simulation
