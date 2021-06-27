@@ -617,6 +617,17 @@ def oil_1phase():
   # is created inside new directory "result_oil_1phase"
   octave = op.Oct2Py()
   octave.run("/content/pyMRST/oil_1phase.m")  
+
+def gas_1phase():
+  """
+  MRST Compressible Gas Simulation (Variable Viscosity over Pressure)
+  """
+  import oct2py as op
+  # Execute simulation program "gas_1phase.m"
+  # After executed, new .mat files (that contains PRESSURE, PORO, PERM result)
+  # is created inside new directory "result_gas_1phase"
+  octave = op.Oct2Py()
+  octave.run("/content/pyMRST/gas_1phase.m")
   
 def oilwater_2phase():
   """
