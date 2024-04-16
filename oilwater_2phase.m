@@ -49,7 +49,8 @@ end
 # [F,Phi] = computeFandPhi(pv, D.tof);
 
 # Print the cum. oil production as OOIP minus OIP
-display(ooip - oip(50));
+# display(ooip - oip(50));
+display(ooip - oip(numSteps));
 
 # Set directory to store results
 directory = "/content/result_oilwater_2phase";
