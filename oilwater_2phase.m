@@ -49,11 +49,14 @@ end
 # [F,Phi] = computeFandPhi(pv, D.tof);
 
 # Print the cum. oil production as OOIP minus OIP
-# display(ooip - oip(50));
-display(ooip - oip(numSteps));
+Np = ooip - oip(numSteps);
+display(Np);
 
 # Set directory to store results
 directory = "/content/result_oilwater_2phase";
+
+filename = sprintf([directory,"/Np.mat"], i);
+save(filename, "Np");
 
 x = any(size(dir([directory '/*.mat' ]),1));
 
