@@ -14,6 +14,7 @@ def setup():
   # Install octave and cloning repositories
   apt_install('octave')
   pip_install('oct2py')
+  pip_install('bayesian-optimization')
   clone('https://bitbucket.org/mrst/mrst-core.git')
   clone('https://bitbucket.org/mrst/mrst-autodiff.git')
   clone('https://github.com/yohanesnuwara/reservoir_datasets')
@@ -662,3 +663,18 @@ def run_simulation():
   subprocess.call(['octave', '-W', "/content/pyMRST/oilwater_2phase.m"])
   # octave = op.Oct2Py()
   # octave.eval("/content/pyMRST/oilwater_2phase.m", verbose=False)  
+
+def optimize(f_objective, pounds, init_points=5, n_iter=10):
+  """
+  Well placement optimization
+  """
+  from bayes_opt import BayesianOptimization
+  optimizer = BayesianOptimization(
+      f=objective,
+      pbounds=pbounds,
+      verbose=2,  # verbose = 1 prints only when a maximum is observed, verbose = 0 is silent
+      random_state=42,
+  )
+  optimizer.maximize(init_points=init_points, n_iter=n_iter)  
+
+  optimizer.maximize(init_points=5, n_iter=10)  
