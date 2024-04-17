@@ -55,9 +55,6 @@ display(Np);
 # Set directory to store results
 directory = "/content/result_oilwater_2phase";
 
-filename = sprintf([directory,"/Np.mat"], i);
-save(filename, "Np");
-
 x = any(size(dir([directory '/*.mat' ]),1));
 
 if x==1
@@ -66,6 +63,11 @@ if x==1
 endif
 # Make new directory
 mkdir(directory)
+
+# Save oil prod
+fid = fopen ("/content/result_oilwater_2phase/Np.txt", "w");
+fdisp (fid, Np);
+fclose (fid);
 
 # Save pressure results into .mat files
 for i=1:length(steps)
