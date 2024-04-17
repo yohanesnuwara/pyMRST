@@ -639,3 +639,15 @@ def oilwater_2phase():
   # "result_oilwater_2phase"
   octave = op.Oct2Py()
   octave.run("/content/pyMRST/oilwater_2phase.m")
+
+def run_simulation():
+  """
+  MRST Two-phase Oil-water Simulation
+  """
+  import oct2py as op
+  # Execute simulation program "oilwater_2phase.m"
+  # After executed, new .mat files is created inside new directory 
+  # "result_oilwater_2phase"
+  subprocess.call(['octave', '-W', "/content/pyMRST/oilwater_2phase.m"])
+  # octave = op.Oct2Py()
+  # octave.eval("/content/pyMRST/oilwater_2phase.m", verbose=False)  
