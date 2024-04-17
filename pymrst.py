@@ -664,17 +664,15 @@ def run_simulation():
   # octave = op.Oct2Py()
   # octave.eval("/content/pyMRST/oilwater_2phase.m", verbose=False)  
 
-def optimize(f_objective, pounds, init_points=5, n_iter=10):
+def optimize(f_objective, pbounds, init_points=5, n_iter=10):
   """
   Well placement optimization
   """
   from bayes_opt import BayesianOptimization
   optimizer = BayesianOptimization(
-      f=objective,
+      f=f_objective,
       pbounds=pbounds,
       verbose=2,  # verbose = 1 prints only when a maximum is observed, verbose = 0 is silent
       random_state=42,
   )
   optimizer.maximize(init_points=init_points, n_iter=n_iter)  
-
-  optimizer.maximize(init_points=5, n_iter=10)  
