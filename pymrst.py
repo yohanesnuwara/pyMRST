@@ -326,8 +326,8 @@ def model_input(model, fluid, well,
   """
   # saving data if true
   if save_data:
-    directory = "/content/pyMRST/input_data";
-    mkdir(directory);
+    directory = "/content/pyMRST/input_data"
+    os.mkdir(directory)
                   
   input = "addpath /content/pyMRST \n"
   input += "addpaths\n\n"
