@@ -22,7 +22,8 @@ def setup():
 
 def write_input(nx, ny, nz, lx, ly, lz, poro, k, rock, fluid, well, 
                 bc_front, bc_back, bc_left, bc_right, 
-                numSteps=None, totTime=None, steps=None):
+                numSteps=None, totTime=None, steps=None, 
+                save_fluid_data=False):
   """
   Convert inputs given in Python to write a MATLAB program that executes
   reservoir geometry, rock property, fluid, boundary condition creation 
@@ -318,11 +319,16 @@ def write_input(nx, ny, nz, lx, ly, lz, poro, k, rock, fluid, well,
 
 def model_input(model, fluid, well, 
                 bc_front, bc_back, bc_left, bc_right, 
-                numSteps=None, totTime=None, steps=None):
+                numSteps=None, totTime=None, steps=None, save_data=False):
   """
   Convert inputs given in Python to write a MATLAB program that executes
   reservoir geometry, rock property, fluid, boundary condition creation 
   """
+  # saving data if true
+  if save_data:
+    directory = "/content/pyMRST/input_data";
+    mkdir(directory);
+                  
   input = "addpath /content/pyMRST \n"
   input += "addpaths\n\n"
 
@@ -410,6 +416,10 @@ def model_input(model, fluid, well,
       input += "fluid = initSimpleFluid('mu', [{}, {}], 'rho', [{}, {}], 'n', [{}, {}]); \n\n".\
       format(fluid["mu"][0], fluid["mu"][1], fluid["rho"][0], fluid["rho"][1],
              fluid["n"][0], fluid["n"][1])
+
+      if save_data:
+        # Save fluid data as txt
+        a=1
       
       input += "# Timestep \n"
       input += "[numSteps, totTime] = deal({}, {}*day); \n".format(numSteps, totTime)
