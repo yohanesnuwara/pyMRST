@@ -324,6 +324,8 @@ def model_input(model, fluid, well,
   Convert inputs given in Python to write a MATLAB program that executes
   reservoir geometry, rock property, fluid, boundary condition creation 
   """
+  import os
+                  
   # saving data if true
   if save_data:
     directory = "/content/pyMRST/input_data"
