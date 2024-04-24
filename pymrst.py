@@ -423,7 +423,7 @@ def model_input(model, fluid, well,
         # Save fluid data as txt
         input += "s=linspace(0,1,20)'; \n"
         input += "kr = fluid.relperm(s); \n\n"
-        input += "fid = fopen ("/content/input_data/kr.txt", "w"); \n"
+        input += "fid = fopen ('/content/input_data/kr.txt', 'w'); \n"
         input += "fdisp (fid, kr); \n"
         input += "fclose (fid); \n"
       
