@@ -328,7 +328,7 @@ def model_input(model, fluid, well,
                   
   # saving data if true
   if save_data:
-    directory = "/content/pyMRST/input_data"
+    directory = "/content/input_data"
     os.mkdir(directory)
                   
   input = "addpath /content/pyMRST \n"
@@ -421,7 +421,11 @@ def model_input(model, fluid, well,
 
       if save_data:
         # Save fluid data as txt
-        a=1
+        input += "s=linspace(0,1,20)'; \n"
+        input += "kr = fluid.relperm(s); \n\n"
+        input += "fid = fopen ("/content/input_data/kr.txt", "w"); \n"
+        input += "fdisp (fid, kr); \n"
+        input += "fclose (fid); \n"
       
       input += "# Timestep \n"
       input += "[numSteps, totTime] = deal({}, {}*day); \n".format(numSteps, totTime)
